@@ -1,7 +1,5 @@
-import sys
+from source.cli import main
 
-from source.agent import ask
 
 if __name__ == "__main__":
-    prompt = "What's a black hole?"
-    ask(prompt)
+    main()
