@@ -14,7 +14,7 @@ source .venv/bin/activate
 Install dependencies:
 
 ```bash
-pip install -r req.txt
+pip install -r requirements.txt
 ```
 
 ### NVIDIA API Key and Model
@@ -120,6 +120,6 @@ AIAgent/
 │   ├── timing.py        # Response-time formatting
 │   ├── tools.py         # Tool implementations and schemas
 │   └── ui.py             # Terminal status animation
-├── req.txt              # Python dependencies
+├── requirements.txt     # Python dependencies
 └── .env                 # Local secrets and model settings
 ```

@@ -1,7 +1,6 @@
 import ast
 import json
 import operator
-import os
 import shlex
 import subprocess
 from pathlib import Path
@@ -138,15 +137,26 @@ TOOL_SCHEMAS = [
         "function": {
             "name": "calculate",
             "description": "Evaluate a numeric arithmetic expression.",
-            "parameters": {"type": "object", "properties": {"expression": {"type": "string"}}, "required": ["expression"]},
+            "parameters": {
+                "type": "object",
+                "properties": {"expression": {"type": "string"}},
+                "required": ["expression"],
+            },
         },
     },
     {
         "type": "function",
         "function": {
             "name": "web_search",
-            "description": "Search the web for current information. Prefer recent authoritative sources, and include dates or source URLs when relevant.",
-            "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]},
+            "description": (
+                "Search the web for current information. Prefer recent authoritative "
+                "sources, and include dates or source URLs when relevant."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {"query": {"type": "string"}},
+                "required": ["query"],
+            },
         },
     },
     {
@@ -154,7 +164,11 @@ TOOL_SCHEMAS = [
         "function": {
             "name": "wikipedia_search",
             "description": "Look up a topic on Wikipedia.",
-            "parameters": {"type": "object", "properties": {"topic": {"type": "string"}}, "required": ["topic"]},
+            "parameters": {
+                "type": "object",
+                "properties": {"topic": {"type": "string"}},
+                "required": ["topic"],
+            },
         },
     },
     {
@@ -162,7 +176,11 @@ TOOL_SCHEMAS = [
         "function": {
             "name": "read_file",
             "description": "Read a text file inside the project workspace.",
-            "parameters": {"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]},
+            "parameters": {
+                "type": "object",
+                "properties": {"path": {"type": "string"}},
+                "required": ["path"],
+            },
         },
     },
     {
@@ -170,7 +188,11 @@ TOOL_SCHEMAS = [
         "function": {
             "name": "safe_shell",
             "description": "Run a read-only allowlisted shell command in the project workspace.",
-            "parameters": {"type": "object", "properties": {"command": {"type": "string"}}, "required": ["command"]},
+            "parameters": {
+                "type": "object",
+                "properties": {"command": {"type": "string"}},
+                "required": ["command"],
+            },
         },
     },
 ]
