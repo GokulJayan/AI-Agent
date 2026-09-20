@@ -33,6 +33,25 @@ NVIDIA_LLM_MODEL=your_model_name
 
 Keep `.env` private. It is excluded by `.gitignore`.
 
+## Sample Models
+
+These are example NVIDIA Build model IDs you can place in `NVIDIA_LLM_MODEL`:
+
+- **`nvidia/nemotron-3.5-lightning-30b-a3b`**
+	- The model initially used with this Python/OpenAI-compatible client.
+	- 30B total parameters and approximately 3B active parameters.
+	- Positioned by NVIDIA for fast, agentic workloads.
+- **`nvidia/nemotron-3-nano-30b-a3b`**
+	- A lower-traffic, general-purpose option.
+	- Suitable for reasoning, coding, instruction following, and tool use.
+- **`glm-5-3-flash`**
+	- Considered for very low API traffic.
+	- Approximately 2K API calls were shown for the relevant 30-day period at the time of review.
+	- Traffic figures can change and should be checked on NVIDIA Build.
+- **`nemotron-3.5-content-safety`**
+	- A very low-traffic NVIDIA model option.
+	- This is a content-safety and moderation model, not a general-purpose chat model.
+
 ## Run
 
 Start interactive chat mode:
