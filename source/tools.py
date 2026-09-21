@@ -33,7 +33,11 @@ _UNARY_OPERATORS = {ast.UAdd: operator.pos, ast.USub: operator.neg}
 
 
 def _calculate_node(node):
-    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+    if (
+        isinstance(node, ast.Constant)
+        and isinstance(node.value, (int, float))
+        and not isinstance(node.value, bool)
+    ):
         return node.value
     if isinstance(node, ast.BinOp) and type(node.op) in _BINARY_OPERATORS:
         return _BINARY_OPERATORS[type(node.op)](
@@ -101,7 +105,10 @@ _ALLOWED_GIT_SUBCOMMANDS = {"diff", "log", "status"}
 
 
 def safe_shell(command):
-    arguments = shlex.split(command)
+    try:
+        arguments = shlex.split(command)
+    except ValueError as error:
+        raise ToolError(f"Malformed shell command: {error}") from error
     if not arguments or arguments[0] not in _ALLOWED_COMMANDS:
         raise ToolError(f"Allowed commands: {', '.join(sorted(_ALLOWED_COMMANDS))}")
     if any(token in command for token in ("|", ">", "<", "&&", ";", "`", "$")):

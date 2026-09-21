@@ -10,7 +10,10 @@ from .ui import start_status_animation, stop_status_animation
 
 
 SYSTEM_PROMPT = (
-    "Answer in at most two short sentences. Do not show reasoning. "
+    "Answer according to the user's request. Keep simple factual answers concise. "
+    "For how-to, cooking, tutorial, or procedure requests, give clear numbered steps "
+    "and include useful ingredients, requirements, or cautions when relevant. "
+    "Do not show private chain-of-thought or hidden reasoning. "
     "When using a tool, rely only on its returned data. For current events or products, "
     "include the relevant date or source when available, and never invent unsupported details."
 )
@@ -36,7 +39,7 @@ def _stream_completion(messages, on_content):
         model=MODEL,
         messages=messages,
         temperature=0.2,
-        max_tokens=128,
+        max_tokens=512,
         extra_body={"chat_template_kwargs": {"enable_thinking": False}},
         tools=TOOL_SCHEMAS,
         tool_choice="auto",
@@ -61,6 +64,7 @@ def _stream_completion(messages, on_content):
 
 def _append_tool_results(messages, content_parts, tool_calls):
     assistant_tool_calls = []
+    tool_results = []
     for call in tool_calls.values():
         try:
             arguments = json.loads(call["arguments"])
@@ -80,7 +84,7 @@ def _append_tool_results(messages, content_parts, tool_calls):
                 },
             }
         )
-        messages.append(
+        tool_results.append(
             {
                 "role": "tool",
                 "tool_call_id": call["id"],
@@ -88,14 +92,14 @@ def _append_tool_results(messages, content_parts, tool_calls):
             }
         )
 
-    messages.insert(
-        -len(assistant_tool_calls),
-        {
-            "role": "assistant",
-            "content": "".join(content_parts) or None,
-            "tool_calls": assistant_tool_calls,
-        },
-    )
+        messages.append(
+            {
+                "role": "assistant",
+                "content": "".join(content_parts) or None,
+                "tool_calls": assistant_tool_calls,
+            }
+        )
+        messages.extend(tool_results)
 
 
 def ask(prompt):
