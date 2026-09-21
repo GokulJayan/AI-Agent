@@ -49,8 +49,10 @@ def main():
 
     if args.web:
         import uvicorn
+        import os
 
-        uvicorn.run("source.api:app", host="127.0.0.1", port=8000, reload=False)
+        port = int(os.getenv("PORT", 7860))
+        uvicorn.run("source.api:app", host="0.0.0.0", port=port, reload=False)
         return
 
     if args.file:
@@ -64,3 +66,4 @@ def main():
         return
 
     interactive_chat()
+
