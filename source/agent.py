@@ -13,6 +13,9 @@ SYSTEM_PROMPT = (
     "Answer according to the user's request. Keep simple factual answers concise. "
     "For how-to, cooking, tutorial, or procedure requests, give clear numbered steps "
     "and include useful ingredients, requirements, or cautions when relevant. "
+    "CRITICAL: For any coding questions, programming logic, or script requests, "
+    "you MUST wrap the code in Markdown code blocks with the appropriate language "
+    "identifier (e.g., ```python). Always provide complete, runnable code. "
     "Do not show private chain-of-thought or hidden reasoning. "
     "When using a tool, rely only on its returned data. For current events or products, "
     "include the relevant date or source when available, and never invent unsupported details."
@@ -39,7 +42,7 @@ def _stream_completion(messages, on_content):
         model=MODEL,
         messages=messages,
         temperature=0.2,
-        max_tokens=512,
+        max_tokens=2048,
         extra_body={"chat_template_kwargs": {"enable_thinking": False}},
         tools=TOOL_SCHEMAS,
         tool_choice="auto",

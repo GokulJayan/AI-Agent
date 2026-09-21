@@ -65,6 +65,7 @@ function renderMarkdown(markdown) {
   let paragraph = [];
   let listType = null;
   let listItems = [];
+  let codeBlock = null;
 
   const closeParagraph = () => {
     if (paragraph.length) {
@@ -79,8 +80,35 @@ function renderMarkdown(markdown) {
     listItems = [];
     listType = null;
   };
+  const closeCodeBlock = () => {
+    if (codeBlock) {
+      const language = codeBlock.lang;
+      const content = codeBlock.content.join("\n");
+      blocks.push(`<pre><code class="language-${language}">${escapeHtml(content)}</code></pre>`);
+      codeBlock = null;
+    }
+  };
 
   for (const line of lines) {
+    const trimmedLine = line.trim();
+
+    if (codeBlock) {
+      if (trimmedLine.startsWith("```") || trimmedLine.startsWith("``")) {
+        closeCodeBlock();
+      } else {
+        codeBlock.content.push(line);
+      }
+      continue;
+    }
+
+    if (trimmedLine.startsWith("```") || trimmedLine.startsWith("``")) {
+      closeParagraph();
+      closeList();
+      const lang = trimmedLine.replace(/^```|^``/, "").trim() || "text";
+      codeBlock = { lang, content: [] };
+      continue;
+    }
+
     const heading = line.match(/^#{1,3}\s+(.+)$/);
     const unordered = line.match(/^\s*[-*]\s+(.+)$/);
     const ordered = line.match(/^\s*\d+[.)]\s+(.+)$/);
@@ -105,6 +133,7 @@ function renderMarkdown(markdown) {
     }
   }
 
+  closeCodeBlock();
   closeParagraph();
   closeList();
   return blocks.join("");
