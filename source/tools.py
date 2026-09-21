@@ -1,11 +1,19 @@
 import ast
 import json
 import operator
+import os
 import shlex
 import subprocess
 from pathlib import Path
 from urllib.parse import quote
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError
+
+try:
+    from ddgs import DDGS
+except ImportError:
+    DDGS = None
+
 
 try:
     from ddgs import DDGS
@@ -30,6 +38,61 @@ _BINARY_OPERATORS = {
     ast.FloorDiv: operator.floordiv,
 }
 _UNARY_OPERATORS = {ast.UAdd: operator.pos, ast.USub: operator.neg}
+
+def _github_request(url):
+    token = os.environ.get("GITHUB_TOKEN")
+    headers = {"User-Agent": "AIAgent/1.0"}
+    if token:
+        headers["Authorization"] = f"token {token}"
+
+    request = Request(url, headers=headers)
+    try:
+        with urlopen(request, timeout=10) as response:
+            return json.load(response)
+    except HTTPError as error:
+        if error.code == 404:
+            raise ToolError("GitHub resource not found.")
+        if error.code == 403:
+            raise ToolError("GitHub API rate limit exceeded. Please provide a GITHUB_TOKEN.")
+        raise ToolError(f"GitHub API error: {error.code} {error.reason}")
+    except Exception as error:
+        raise ToolError(f"GitHub request failed: {error}")
+
+def github_get_repo_structure(owner, repo):
+    url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/main?recursive=1"
+    try:
+        data = _github_request(url)
+    except ToolError as error:
+        if "not found" in str(error).lower():
+            url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/master?recursive=1"
+            data = _github_request(url)
+        else:
+            raise error
+
+    paths = [item["path"] for item in data.get("tree", [])]
+    return json.dumps(paths, indent=2)
+
+def github_get_file_content(owner, repo, path):
+    url = f"https://api.github.com/repos/{owner}/{repo}/contents/{quote(path)}"
+    data = _github_request(url)
+
+    if "content" not in data:
+        raise ToolError("Could not find content for the specified file.")
+
+    import base64
+    content_b64 = data["content"]
+    content = base64.b64decode(content_b64.replace("\n", ""))
+    return content.decode("utf-8", errors="replace")[:12000]
+
+def github_get_repo_readme(owner, repo):
+    url = f"https://api.github.com/repos/{owner}/{repo}/readme"
+    data = _github_request(url)
+
+    import base64
+    content_b64 = data.get("content", "")
+    content = base64.b64decode(content_b64.replace("\n", ""))
+    return content.decode("utf-8", errors="replace")[:12000]
+
 
 
 def _calculate_node(node):
@@ -202,6 +265,52 @@ TOOL_SCHEMAS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "github_get_repo_structure",
+            "description": "Get the full file tree of a public GitHub repository to understand its project layout.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "owner": {"type": "string", "description": "The GitHub username or organization name."},
+                    "repo": {"type": "string", "description": "The name of the repository."},
+                },
+                "required": ["owner", "repo"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "github_get_file_content",
+            "description": "Get the contents of a specific file from a public GitHub repository.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "owner": {"type": "string", "description": "The GitHub username or organization name."},
+                    "repo": {"type": "string", "description": "The name of the repository."},
+                    "path": {"type": "string", "description": "The path to the file within the repository."},
+                },
+                "required": ["owner", "repo", "path"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "github_get_repo_readme",
+            "description": "Get the README file of a public GitHub repository to understand the project purpose and setup.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "owner": {"type": "string", "description": "The GitHub username or organization name."},
+                    "repo": {"type": "string", "description": "The name of the repository."},
+                },
+                "required": ["owner", "repo"],
+            },
+        },
+    },
 ]
 
 TOOL_FUNCTIONS = {
@@ -210,6 +319,9 @@ TOOL_FUNCTIONS = {
     "wikipedia_search": wikipedia_search,
     "read_file": read_file,
     "safe_shell": safe_shell,
+    "github_get_repo_structure": github_get_repo_structure,
+    "github_get_file_content": github_get_file_content,
+    "github_get_repo_readme": github_get_repo_readme,
 }
 
 
