@@ -9,6 +9,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Chat with the AI agent.")
     parser.add_argument("prompt", nargs="*", help="One-shot prompt")
     parser.add_argument("--file", type=str, help="Read the prompt from a text file")
+    parser.add_argument("--web", action="store_true", help="Start the web interface")
     return parser.parse_args()
 
 
@@ -45,6 +46,12 @@ def interactive_chat():
 
 def main():
     args = parse_args()
+
+    if args.web:
+        import uvicorn
+
+        uvicorn.run("source.api:app", host="127.0.0.1", port=8000, reload=False)
+        return
 
     if args.file:
         prompt = read_prompt_file(args.file)

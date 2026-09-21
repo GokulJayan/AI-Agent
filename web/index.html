@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NVIDIA AI Agent</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">NVIDIA / AGENT LAB</p>
+        <h1>Ask. Explore. Act.</h1>
+      </div>
+    </header>
+
+    <section class="workspace" aria-label="Agent conversation">
+      <div class="intro" id="intro">
+        <p class="kicker">A streaming tool-using assistant</p>
+        <h2>Turn a question into a useful next step.</h2>
+        <p>Ask for an explanation, a recipe, a calculation, or a fresh web lookup.</p>
+      </div>
+      <div class="messages" id="messages" aria-live="polite"></div>
+    </section>
+
+    <form class="composer" id="composer">
+      <label for="prompt">Message the agent</label>
+      <div class="composer-row">
+        <textarea id="prompt" rows="1" maxlength="12000" placeholder="Try: How do I make chilli chicken?" required></textarea>
+        <button type="submit" id="send">Send <span aria-hidden="true">&#8599;</span></button>
+      </div>
+      <div class="composer-meta"><span>Enter to send</span></div>
+    </form>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

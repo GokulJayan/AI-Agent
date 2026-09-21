@@ -7,3 +7,5 @@ python-dotenv
 pydantic
 ddgs
 openai
+fastapi
+uvicorn[standard]

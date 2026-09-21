@@ -72,6 +72,15 @@ Read a prompt from a text file:
 .venv/bin/python main.py --file prompts/question.txt
 ```
 
+Start the web interface:
+
+```bash
+.venv/bin/python main.py --web
+```
+
+Then open [http://127.0.0.1:8000](http://127.0.0.1:8000). The backend exposes
+`GET /api/health` and streams `POST /api/chat` responses with Server-Sent Events.
+
 ## Interactive Commands
 
 ```text
@@ -110,8 +119,11 @@ Tool results are sent back to the model so it can produce a final answer.
 ```text
 AIAgent/
 ├── main.py              # Application entry point
+├── web/                  # Browser UI
 ├── source/
 │   ├── agent.py         # Model requests and tool-calling loop
+│   ├── agent_service.py  # Transport-neutral streaming events
+│   ├── api.py            # FastAPI and SSE endpoints
 │   ├── cli.py           # CLI argument parsing and chat loop
 │   ├── client.py        # NVIDIA API client
 │   ├── commands.py      # Interactive commands
