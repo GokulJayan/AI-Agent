@@ -59,4 +59,17 @@ button:disabled { cursor: wait; opacity: .6; }
 @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse { 0%, 100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.15); } }
 @media (prefers-reduced-motion: reduce) { .intro, .message, .assistant-thinking::after { animation: none; } }
-@media (max-width: 640px) { .app-shell { width: min(100% - 24px, 1120px); } .topbar { padding-top: 22px; } .model-chip { max-width: 145px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .workspace { padding-top: 42px; } .message.user, .message.assistant { margin-left: 0; margin-right: 0; } .composer-row { flex-direction: column; } button { min-height: 48px; } }
+@media (max-width: 640px) {
+  .app-shell { width: 100%; padding: 0 16px; }
+  .topbar { padding: 20px 0; border-bottom: 1px solid var(--line); }
+  .topbar h1 { font-size: 28px; }
+  .workspace { padding-top: 30px; padding-bottom: 100px; }
+  .intro { text-align: center; margin: 0 auto; }
+  .intro h2 { font-size: 32px; margin-bottom: 12px; }
+  .message.user, .message.assistant { margin-left: 0; margin-right: 0; width: 100%; }
+  .message { padding: 14px; }
+  .composer { padding: 12px 0 32px; }
+  .composer-row { flex-direction: row; align-items: flex-end; gap: 8px; }
+  textarea { padding: 12px; max-height: 150px; }
+  button { min-width: 64px; padding: 0 16px; height: 44px; }
+}
